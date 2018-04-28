@@ -1,3 +1,9 @@
+
+from config import *
+
+import requests
+import json
+
 class AccessToken(object):
 
     def __init__(self, AppID=AppID, AppSecret=AppSecret, Redirect_uri=Redirect_uri):
@@ -6,20 +12,20 @@ class AccessToken(object):
         self.Redirect_uri = Redirect_uri
         self.__state = STATE
         
-        self.__access_token = "access_token_str"
+        self.__access_token = None
         self.__user_id = None
         self.__expire_time = None
 
         __url = BASE_URL + "oauth/authorize?client_id=%s&redirect_uri=%s&state=%s"
         self.init_url = __url % (self.AppID, self.Redirect_uri, self.__state)
 
-    def _set_token(self, code):
+    def set_token(self, code):
         url = BASE_URL + "oauth/access_token"
         data = {
                 "client_id": self.AppID,
                 "client_secret": self.AppSecret, 
                 "code": code, 
-                "redirect_uri":self.redirect_uri
+                "redirect_uri":self.Redirect_uri
                 }
         res = requests.post(url, data)
         ctn = json.loads(res.content)
@@ -38,27 +44,48 @@ class AccessToken(object):
 
 at = AccessToken()
 
+
+class ApiError(AttributeError):
+    def __init__(self, attr):
+        self.message = "api has no attribute '%s'"%'.'.join(attr)
+        self.args = (self.message,)
+
 class ApiFramework(object):
 
-    def __init__(self, path=[]):
-        self.path = path
+    def __init__(self, attr=[]):
+        self.attr = attr
 
     def __getattr__(self, s):
-        af = ApiFramework(self.path+[s])
+        af = ApiFramework(self.attr+[s])
         return af
 
     @at.access_by_token
     def __call__(self, *args, **kwargs):
-        access_token = kwargs.get("access_token", "")
-        url = BASE_URL + "/".join(self.path)
-        #res_ctn = requests.get(url, params=kwargs).content
-        print(kwargs)
-
-
+        
+        path = self.attr[0:-1]
+        method = self.attr[-1]
+        url = BASE_URL + "/".join(path)
+        print(self.attr, "===========")
+        print(method == "get")
+        res_ctn =None
+        
+        # res_ctn = requests.get(url, params=kwargs).content
+        if(method == "get"):
+            res_ctn = requests.get(url, params=kwargs).content
+        elif(method == "post"):
+            res_ctn = requests.post(url, data=kwargs).content
+        else:
+            raise Exception("wrong http method")
+        return res_ctn
+        
 
 api = ApiFramework()
 
-x = api.friend.me_list.get(page=1, count=2)
+
+
+
+
+
 
 
     
