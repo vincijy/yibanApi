@@ -1,13 +1,15 @@
 
-from yibanApi.config import *
+# from yibanApi.config import Config
 
 import requests
 import json
 import os
 import time
 
-TOKEN_DIR = os.path.join('yibanApi', "access_token.json")
-print(TOKEN_DIR)
+path = os.path.abspath('.')
+TOKEN_DIR = os.path.join(path, "access_token.json")
+
+BASE_URL = "https://openapi.yiban.cn/"
 
 def get_mc():
     try:
@@ -21,11 +23,11 @@ def set_mc(j):
 
 class AccessToken(object):
 
-    def __init__(self, code, AppID=AppID, AppSecret=AppSecret, Redirect_uri=Redirect_uri):
-        self.AppID= AppID
-        self.AppSecret = AppSecret
-        self.Redirect_uri = Redirect_uri
-        self.__state = STATE
+    def __init__(self, code, Config):
+        self.AppID= Config.AppID
+        self.AppSecret = Config.AppSecret
+        self.Redirect_uri = Config.Redirect_uri
+        self.__state = Config.STATE 
 
         self.code = code
 
@@ -35,7 +37,7 @@ class AccessToken(object):
         #current user token
         self.__access_token = None
         self.__user_id = None
-        self.__end_time = "0.0"
+        self.__end_time = 0
 
 
     def _load_file_token(self):
@@ -44,7 +46,8 @@ class AccessToken(object):
             file_dict = json.loads(mc)
             user_dict = file_dict[self.__user_id]
 
-            end_time = user_dict["expires"]
+            #int type
+            end_time = int(user_dict["expires"])
             token = user_dict["access_token"]
             #reset
             if(end_time < time.time()):
@@ -69,7 +72,7 @@ class AccessToken(object):
                 "code": self.code, 
                 "redirect_uri":self.Redirect_uri
                 }
-        ctn = json.loads(requests.post(url, data).content)
+        ctn = json.loads(requests.post(url, data).text)
         self.__user_id = ctn["userid"]
         
         mc = get_mc()
@@ -86,7 +89,7 @@ class AccessToken(object):
         self.__access_token, self.__end_time = self._load_file_token()
 
     def get_token(self):
-        if(self.__end_time < str(time.time())):
+        if(self.__end_time < time.time()):
             self.set_token()
         return self.__access_token
 
@@ -120,9 +123,9 @@ class ApiFramework(object):
         url = BASE_URL + "/".join(path)
         res_ctn =None
         if(method == "get"):
-            res_ctn = requests.get(url, params=kwargs).content
+            res_ctn = requests.get(url, params=kwargs).text
         elif(method == "post"):
-            res_ctn = requests.post(url, data=kwargs).content
+            res_ctn = requests.post(url, data=kwargs).text
         else:
             raise ApiError(self.attr)
         return res_ctn
