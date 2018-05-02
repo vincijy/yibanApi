@@ -26,7 +26,7 @@ class Config(object):
 
 	AppID = ""
 	AppSecret = ""
-	Redirect_uri = ""
+	Redirect_uri = "myhost/redirect"
 	STATE = "any_random_str"
 
 from flask import Flask, request, redirect
