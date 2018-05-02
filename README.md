@@ -45,13 +45,17 @@ def index():
 
 @app.route('/redirect')
 def user_info():
+
     __code = request.args.get("code")
     at = AccessToken(code=__code, Config)
-    #then you can easily define your function using decorator @at.access_by_token
+
+    #使用装饰器@at.access_by_token定义自己的函数
     @at.access_by_token
     def user_me(access_token):
     	return api.user.me.get(access_token=access_token)
+
     return user_me()
+
 if __name__ == '__main__':
     app.run()
 ```
@@ -76,8 +80,8 @@ arg2
 @at.access_by_token
 def my_func(access_token):
 	return api.path.method(access_token=access_token,
-                    arg1=value1,
-                    arg2=value2)
+                    	   arg1=value1,
+                    	   arg2=value2)
 
 ```                    
 
@@ -85,6 +89,7 @@ def my_func(access_token):
 eg：
 
 1.
+```
 接口说明：
     获取当前用户基本信息。
 
@@ -105,8 +110,9 @@ access_token	必填	用户授权凭证
     def user_me(access_token):
     	return api.user.me.get(access_token=access_token)
 
-
+```
 2.
+```
 接口说明：
     开发者主动取消指定用户的授权。
 
@@ -128,8 +134,9 @@ access_token	必填	待注销的授权凭证
     def revoke(access_token):
     	return api.oauth.revoke_token.post(access_token=access_token,
     	                                   client_id="填写你的client_id")
-
+```
 3
+```
 接口说明：
     删除指定好友。
 
@@ -151,3 +158,4 @@ yb_friend_uid	必填	待删除好友的易班用户ID
     def remove(access_token):
     	return api.friend.remove(access_token=access_token,
     	                         yb_friend_uid="待删除好友的易班用户ID")
+```    	                         
