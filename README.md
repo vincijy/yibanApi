@@ -1,22 +1,30 @@
 
 
-# 介绍
+## 介绍
 yibanApi 是一个易班app开发接口框架。
 
-# 配置
+## 配置
 <code>pip install yibanApi</code>
 
-<code>
-class Config(object):
-	AppID = ""
-	AppSecret = ""
-	Redirect_uri = ""
-	STATE = "any_random_str"
-</code>
 
-# 例子
-<code>
+```
 class Config(object):
+
+	AppID = ""
+
+	AppSecret = ""
+
+	Redirect_uri = ""
+
+	STATE = "any_random_str"
+```
+
+## 例子
+
+```
+
+class Config(object):
+
 	AppID = ""
 	AppSecret = ""
 	Redirect_uri = "myhost/redirect"
@@ -46,23 +54,32 @@ def user_info():
     return user_me()
 if __name__ == '__main__':
     app.run()
-</code>
+```
 
-# 说明
+## 说明
 与易班开发文档API接口具有一致性，即：
 
 如果接口地址为：
+
 https://openapi.yiban.cn/path
+
 请求方法为： method
+
 请求参数除了access_token为：
+
 arg1
+
 arg2
+
 那么可以通过这样定义函数：
+```
 @at.access_by_token
 def my_func(access_token):
 	return api.path.method(access_token=access_token,
                     arg1=value1,
                     arg2=value2)
+
+```                    
 
 以下通过几个示例说明：
 eg：
