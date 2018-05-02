@@ -1,27 +1,22 @@
 
 
 ## 介绍
-yibanApi 是一个易班app开发接口框架。
+yibanApi 是一个易班app开发接口框架。主要是为了愉快地调用API。
 
-## 配置
-<code>pip install yibanApi</code>
+## 开始
 
++ <code>pip install yibanApi</code>
++ 配置应用基本配置Config
++ 请求用户授权获取令牌code
++ 利用code 和 Config 实例化AccessToken
++ 开始根据API文档愉快地定义自己的API函数
 
-```
-class Config(object):
-
-	AppID = ""
-
-	AppSecret = ""
-
-	Redirect_uri = ""
-
-	STATE = "any_random_str"
-```
+以下通过一个应用flask例子具体说明
 
 ## 例子
 
 ```
+#获取用户信息的例子
 
 class Config(object):
 
@@ -36,7 +31,6 @@ from yibanApi import AccessToken, api
 
 app = Flask(__name__)
 
-
 @app.route('/')
 def index():
     at = AccessToken(Config)
@@ -45,11 +39,14 @@ def index():
 
 @app.route('/redirect')
 def user_info():
-
+    
+    #获取令牌code
     __code = request.args.get("code")
+
+    #利用code 和 Config 实例化AccessToken
     at = AccessToken(code=__code, Config)
 
-    #使用装饰器@at.access_by_token定义自己的函数
+    #开始使用装饰器@at.access_by_token 和api定义自己的函数
     @at.access_by_token
     def user_me(access_token):
     	return api.user.me.get(access_token=access_token)
@@ -75,7 +72,7 @@ arg1
 
 arg2
 
-那么可以通过这样定义函数：
+那么在实例化AccessToken后可以通过这样定义函数：
 ```
 @at.access_by_token
 def my_func(access_token):
@@ -104,7 +101,9 @@ GET请求
 
 请求参数：
 access_token	必填	用户授权凭证
+```
 
+```
 根据接口地址和请求方式，可以这样写：
     @at.access_by_token
     def user_me(access_token):
@@ -128,13 +127,17 @@ POST请求（form-data方式）
 请求参数：
 client_id	必填	应用appkey
 access_token	必填	待注销的授权凭证
+```
 
+```
 根据接口地址和请求方式，可以这样写：
     @at.access_by_token
     def revoke(access_token):
     	return api.oauth.revoke_token.post(access_token=access_token,
     	                                   client_id="填写你的client_id")
+
 ```
+
 3
 ```
 接口说明：
@@ -152,7 +155,9 @@ GET请求
 请求参数：
 access_token	必填	用户授权凭证
 yb_friend_uid	必填	待删除好友的易班用户ID    	                                   
+```
 
+```
 根据接口地址和请求方式，可以这样写：
     @at.access_by_token
     def remove(access_token):
