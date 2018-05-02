@@ -18,11 +18,15 @@ yibanApi 是一个易班app开发接口框架。主要是为了愉快地调用AP
 ```
 #获取用户信息的例子
 
+#coding=utf-8
+#获取用户信息的例子
+
+
 class Config(object):
 
 	AppID = ""
 	AppSecret = ""
-	Redirect_uri = "myhost/redirect"
+	Redirect_uri = ""
 	STATE = "any_random_str"
 
 from flask import Flask, request, redirect
@@ -33,7 +37,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    at = AccessToken(Config)
+    at = AccessToken(code=None, Config=Config)
     return redirect(at.init_url)
 
 
@@ -44,7 +48,7 @@ def user_info():
     __code = request.args.get("code")
 
     #利用code 和 Config 实例化AccessToken
-    at = AccessToken(code=__code, Config)
+    at = AccessToken(code=__code, Config=Config)
 
     #开始使用装饰器@at.access_by_token 和api定义自己的函数
     @at.access_by_token
@@ -55,6 +59,7 @@ def user_info():
 
 if __name__ == '__main__':
     app.run()
+
 ```
 
 ## 说明
@@ -161,6 +166,6 @@ yb_friend_uid	必填	待删除好友的易班用户ID
 根据接口地址和请求方式，可以这样写：
     @at.access_by_token
     def remove(access_token):
-    	return api.friend.remove(access_token=access_token,
+    	return api.friend.remove.get(access_token=access_token,
     	                         yb_friend_uid="待删除好友的易班用户ID")
 ```    	                         
