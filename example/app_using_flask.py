@@ -1,5 +1,6 @@
 #coding=utf-8
-#获取用户信息的例子
+#-*-coding:utf-8-*-
+#!/usr/bin/env python3
 
 
 class Config(object):
