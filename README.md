@@ -38,9 +38,12 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     at = AccessToken(code=None, Config=Config)
+
+    #init_url：为了获取用户授权令牌code必须先访问的地址
     return redirect(at.init_url)
 
 
+#用户授权后，重定向到该地址，携带参数"code"
 @app.route('/redirect')
 def user_info():
     
